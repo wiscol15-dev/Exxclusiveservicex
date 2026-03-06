@@ -1,65 +1,156 @@
-import Image from "next/image";
+import MainNavbar from "@/components/MainNavbar";
+import ActionButtons from "@/components/ActionButtons";
+import MainFeed from "@/components/MainFeed";
+import Footer from "@/components/Footer";
+import Pagination from "@/components/Pagination";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+export const revalidate = 0;
+
+export const metadata = {
+  title: "exxclusiveservicex | Catálogo Global VIP",
+  description:
+    "High-end luxury marketplace for exclusive services. Absolute discretion, security, and premium experiences worldwide.",
+  robots: "index, follow",
+};
+
+export default async function HomePage(props: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const searchParams = await props.searchParams;
+
+  const pageParam = searchParams?.page;
+  const currentPage = typeof pageParam === "string" ? parseInt(pageParam) : 1;
+  const itemsPerPage = 12;
+
+  const countryParam = searchParams?.country;
+  const currentCountry = typeof countryParam === "string" ? countryParam : null;
+
+  const from = (currentPage - 1) * itemsPerPage;
+  const to = from + itemsPerPage - 1;
+
+  let lang: "es" | "en" | "pt" = "es";
+  if (currentCountry) {
+    const c = currentCountry.toLowerCase();
+    if (c === "estados unidos" || c === "united states") lang = "en";
+    else if (c === "portugal" || c === "brasil") lang = "pt";
+  }
+
+  const { data: settingsData } = await supabase
+    .from("platform_settings")
+    .select("*")
+    .limit(1)
+    .single();
+
+  const { data: countriesData } = await supabase
+    .from("countries")
+    .select("*")
+    .eq("is_active", true)
+    .order("name");
+
+  let countQuery = supabase
+    .from("services")
+    .select("*", { count: "exact", head: true })
+    .eq("is_approved", true);
+
+  if (currentCountry) {
+    countQuery = countQuery.eq("country", currentCountry);
+  }
+
+  const { count } = await countQuery;
+  const totalPages = count ? Math.ceil(count / itemsPerPage) : 1;
+
+  let dataQuery = supabase
+    .from("services")
+    .select(
+      `
+      id,
+      name,
+      age,
+      country,
+      province,
+      description,
+      contact_phone,
+      contact_whatsapp,
+      contact_telegram,
+      contact_email,
+      attention_locations,
+      service_tags,
+      is_exclusive,
+      created_at,
+      service_images (
+        image_url
+      )
+    `,
+    )
+    .eq("is_approved", true);
+
+  if (currentCountry) {
+    dataQuery = dataQuery.eq("country", currentCountry);
+  }
+
+  const { data: rawServices, error } = await dataQuery
+    .order("is_exclusive", { ascending: false })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching services:", error);
+  }
+
+  const formattedServices = rawServices
+    ? rawServices.map((service: any) => ({
+        id: service.id,
+        name: service.name,
+        age: service.age,
+        country: service.country,
+        province: service.province,
+        description: service.description,
+        contact_phone: service.contact_phone,
+        contact_whatsapp: service.contact_whatsapp,
+        contact_telegram: service.contact_telegram,
+        contact_email: service.contact_email,
+        attention_locations: service.attention_locations,
+        service_tags: service.service_tags,
+        is_exclusive: service.is_exclusive,
+        created_at: service.created_at,
+        images: service.service_images.map((img: any) => img.image_url),
+      }))
+    : [];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="relative min-h-screen bg-elite-black overflow-x-hidden selection:bg-elite-gold selection:text-elite-black flex flex-col justify-between">
+      <div className="fixed top-0 inset-x-0 h-screen bg-gradient-to-b from-elite-dark-red/10 via-elite-black to-elite-black pointer-events-none z-0" />
+      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-elite-gold/5 blur-[150px] pointer-events-none z-0" />
+
+      <div className="flex-1">
+        <MainNavbar
+          settings={settingsData || undefined}
+          availableCountries={countriesData || []}
+          currentCountry={currentCountry}
+          lang={lang}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <div className="relative z-10 flex flex-col items-center w-full pt-28">
+          <MainFeed initialServices={formattedServices} />
+
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              currentCountry={currentCountry}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          )}
+
+          <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 mt-4 pb-12">
+            <ActionButtons />
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+
+      <div className="relative z-10 w-full mt-auto">
+        <Footer settings={settingsData || undefined} />
+      </div>
+    </main>
   );
 }
