@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import AgeVerification from "@/components/AgeVerification";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,10 +28,15 @@ export const metadata: Metadata = {
     "acompañantes de lujo",
     "exxclusiveservicex",
   ],
-  authors: [{ name: "exxclusiveservicex", url: "https://tudominio.com" }],
+  authors: [
+    {
+      name: "exxclusiveservicex",
+      url: "https://exxclusiveservicex.vercel.app",
+    },
+  ],
   creator: "exxclusiveservicex",
   publisher: "exxclusiveservicex",
-  metadataBase: new URL("https://tudominio.com"),
+  metadataBase: new URL("https://exxclusiveservicex.vercel.app"),
   alternates: {
     canonical: "/",
   },
@@ -39,10 +45,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  other: {
+    rating: "adult",
+    "RTA-5042-1996-1400-1577-RTA": "adult",
+  },
   openGraph: {
     type: "website",
     locale: "es_ES",
-    url: "https://tudominio.com",
+    url: "https://exxclusiveservicex.vercel.app",
     title: "exxclusiveservicex | Experiencias y Perfiles VIP",
     description:
       "El marketplace de lujo para servicios exclusivos. Seguridad, discreción y perfiles 100% verificados.",
@@ -90,7 +100,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <AgeVerification />
+        {children}
+      </body>
     </html>
   );
 }

@@ -35,6 +35,7 @@ import {
   Check,
   Info,
   X,
+  Lock,
 } from "lucide-react";
 
 interface Country {
@@ -58,6 +59,7 @@ export default function CreateService() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [dbCountries, setDbCountries] = useState<Country[]>([]);
   const [dbPaymentMethods, setDbPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -250,6 +252,11 @@ export default function CreateService() {
     setIsLoading(true);
     setError(null);
 
+    if (!acceptedTerms) {
+      setError("Debes aceptar los términos y condiciones legales.");
+      setIsLoading(false);
+      return;
+    }
     if (
       !formData.contact_phone &&
       !formData.contact_whatsapp &&
@@ -410,6 +417,50 @@ export default function CreateService() {
       },
     },
   };
+
+  const renderTermsCheckbox = () => (
+    <div className="w-full bg-elite-dark/80 border border-white/5 rounded-2xl p-6 mt-8 flex items-start gap-4 backdrop-blur-sm transition-all hover:border-elite-gold/30 shadow-lg">
+      <div className="pt-1">
+        <button
+          type="button"
+          onClick={() => setAcceptedTerms(!acceptedTerms)}
+          className={`w-6 h-6 rounded border flex items-center justify-center transition-all ${acceptedTerms ? "bg-elite-gold border-elite-gold" : "bg-black/50 border-white/30 hover:border-elite-gold"}`}
+        >
+          {acceptedTerms && <Check size={16} className="text-black" />}
+        </button>
+      </div>
+      <div className="text-xs text-white/60 leading-relaxed">
+        <p>
+          Declaro bajo juramento que soy mayor de edad y confirmo que he leído,
+          entendido y acepto incondicionalmente los{" "}
+          <Link
+            href="/terminos"
+            target="_blank"
+            className="text-elite-gold hover:underline font-bold"
+          >
+            Términos de Servicio
+          </Link>
+          , las{" "}
+          <Link
+            href="/privacidad"
+            target="_blank"
+            className="text-elite-gold hover:underline font-bold"
+          >
+            Políticas de Privacidad
+          </Link>{" "}
+          y el acuerdo de{" "}
+          <Link
+            href="/discrecion"
+            target="_blank"
+            className="text-elite-gold hover:underline font-bold"
+          >
+            Discreción de Datos
+          </Link>{" "}
+          de esta plataforma.
+        </p>
+      </div>
+    </div>
+  );
 
   const renderFormFields = (theme: "gold" | "silver") => {
     const focusColor =
@@ -847,175 +898,190 @@ export default function CreateService() {
                 </h1>
               </div>
               {renderFormFields("gold")}
-              <div className="mt-8 bg-gradient-to-br from-elite-dark to-black border border-elite-gold/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-elite-gold/5 rounded-full blur-2xl"></div>
-                <h2 className="text-lg font-black uppercase tracking-widest text-elite-gold mb-6 flex items-center gap-2">
-                  <CreditCard size={20} /> Realizar Pago Seguro ($10.00)
-                </h2>
+              {renderTermsCheckbox()}
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                  {dbPaymentMethods.map((method) => {
-                    let IconComponent = CreditCard;
-                    const lower = method.name.toLowerCase();
-                    if (
-                      lower.includes("mobile") ||
-                      lower.includes("pay") ||
-                      lower.includes("apple") ||
-                      lower.includes("google")
-                    )
-                      IconComponent = Smartphone;
-                    else if (
-                      lower.includes("transfer") ||
-                      lower.includes("zelle")
-                    )
-                      IconComponent = Landmark;
-                    return (
-                      <button
-                        key={method.id}
-                        type="button"
-                        onClick={() =>
-                          handlePaymentSelect(
-                            method.id,
-                            method.details,
-                            method.name,
-                          )
-                        }
-                        className={`flex flex-col items-center gap-2 bg-black border rounded-xl py-4 transition-all duration-300 ${activePaymentMethod === method.id ? "border-elite-gold text-elite-gold shadow-[0_0_15px_rgba(245,158,11,0.15)] scale-105" : "border-white/10 text-white/40 hover:border-white/30 hover:text-white"}`}
+              {acceptedTerms ? (
+                <div className="mt-8 bg-gradient-to-br from-elite-dark to-black border border-elite-gold/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-elite-gold/5 rounded-full blur-2xl"></div>
+                  <h2 className="text-lg font-black uppercase tracking-widest text-elite-gold mb-6 flex items-center gap-2">
+                    <CreditCard size={20} /> Realizar Pago Seguro ($10.00)
+                  </h2>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    {dbPaymentMethods.map((method) => {
+                      let IconComponent = CreditCard;
+                      const lower = method.name.toLowerCase();
+                      if (
+                        lower.includes("mobile") ||
+                        lower.includes("pay") ||
+                        lower.includes("apple") ||
+                        lower.includes("google")
+                      )
+                        IconComponent = Smartphone;
+                      else if (
+                        lower.includes("transfer") ||
+                        lower.includes("zelle")
+                      )
+                        IconComponent = Landmark;
+                      return (
+                        <button
+                          key={method.id}
+                          type="button"
+                          onClick={() =>
+                            handlePaymentSelect(
+                              method.id,
+                              method.details,
+                              method.name,
+                            )
+                          }
+                          className={`flex flex-col items-center gap-2 bg-black border rounded-xl py-4 transition-all duration-300 ${activePaymentMethod === method.id ? "border-elite-gold text-elite-gold shadow-[0_0_15px_rgba(245,158,11,0.15)] scale-105" : "border-white/10 text-white/40 hover:border-white/30 hover:text-white"}`}
+                        >
+                          <IconComponent size={20} />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-center">
+                            {method.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {isStripeMethod ? (
+                    clientSecret ? (
+                      <Elements
+                        stripe={stripePromise}
+                        options={{ clientSecret, appearance: stripeAppearance }}
                       >
-                        <IconComponent size={20} />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-center">
-                          {method.name}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {isStripeMethod ? (
-                  clientSecret ? (
-                    <Elements
-                      stripe={stripePromise}
-                      options={{ clientSecret, appearance: stripeAppearance }}
-                    >
-                      <StripeForm
-                        onPaymentSuccess={saveProfileToDatabase}
-                        isLoading={isLoading}
-                        methodName={activeMethodName}
-                        preferredMethod={preferredStripeMethod}
-                      />
-                    </Elements>
+                        <StripeForm
+                          onPaymentSuccess={saveProfileToDatabase}
+                          isLoading={isLoading}
+                          methodName={activeMethodName}
+                          preferredMethod={preferredStripeMethod}
+                        />
+                      </Elements>
+                    ) : (
+                      <div className="py-10 text-center text-xs text-white/50 animate-pulse font-bold tracking-widest uppercase border border-white/5 rounded-xl bg-black/50">
+                        Cargando Pasarela de Pagos...
+                      </div>
+                    )
                   ) : (
-                    <div className="py-10 text-center text-xs text-white/50 animate-pulse font-bold tracking-widest uppercase border border-white/5 rounded-xl bg-black/50">
-                      Cargando Pasarela de Pagos...
-                    </div>
-                  )
-                ) : (
-                  <>
-                    {activePaymentDetails && (
-                      <div className="mb-6">
-                        {(() => {
-                          try {
-                            const parsed = JSON.parse(activePaymentDetails);
-                            if (Array.isArray(parsed))
-                              return (
-                                <div className="space-y-3">
-                                  {parsed.map((field: any, idx: number) => (
-                                    <div
-                                      key={idx}
-                                      className="flex items-center justify-between bg-black/40 border border-white/5 p-3 rounded-xl group hover:border-white/10"
-                                    >
-                                      <div className="flex flex-col gap-1">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-elite-gold">
-                                          {field.label}
-                                        </span>
-                                        <span className="text-sm text-white font-mono tracking-wider">
-                                          {field.value}
-                                        </span>
-                                      </div>
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          handleCopy(field.value);
-                                        }}
-                                        className="p-2 bg-white/5 hover:bg-elite-gold hover:text-black rounded-lg transition-colors"
+                    <>
+                      {activePaymentDetails && (
+                        <div className="mb-6">
+                          {(() => {
+                            try {
+                              const parsed = JSON.parse(activePaymentDetails);
+                              if (Array.isArray(parsed))
+                                return (
+                                  <div className="space-y-3">
+                                    {parsed.map((field: any, idx: number) => (
+                                      <div
+                                        key={idx}
+                                        className="flex items-center justify-between bg-black/40 border border-white/5 p-3 rounded-xl group hover:border-white/10"
                                       >
-                                        {copiedField === field.value ? (
-                                          <Check
-                                            size={16}
-                                            className="text-green-500"
-                                          />
-                                        ) : (
-                                          <Copy size={16} />
-                                        )}
-                                      </button>
-                                    </div>
-                                  ))}
+                                        <div className="flex flex-col gap-1">
+                                          <span className="text-[9px] font-black uppercase tracking-widest text-elite-gold">
+                                            {field.label}
+                                          </span>
+                                          <span className="text-sm text-white font-mono tracking-wider">
+                                            {field.value}
+                                          </span>
+                                        </div>
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleCopy(field.value);
+                                          }}
+                                          className="p-2 bg-white/5 hover:bg-elite-gold hover:text-black rounded-lg transition-colors"
+                                        >
+                                          {copiedField === field.value ? (
+                                            <Check
+                                              size={16}
+                                              className="text-green-500"
+                                            />
+                                          ) : (
+                                            <Copy size={16} />
+                                          )}
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                            } catch {
+                              return (
+                                <div className="p-4 bg-white/5 border border-white/10 rounded-xl text-xs text-white/70 whitespace-pre-wrap">
+                                  {activePaymentDetails}
                                 </div>
                               );
-                          } catch {
-                            return (
-                              <div className="p-4 bg-white/5 border border-white/10 rounded-xl text-xs text-white/70 whitespace-pre-wrap">
-                                {activePaymentDetails}
-                              </div>
-                            );
-                          }
-                        })()}
-                      </div>
-                    )}
-                    <div className="mt-6 border-t border-white/5 pt-6 mb-6">
-                      <label className="block text-xs font-bold uppercase tracking-widest text-white mb-3">
-                        Adjuntar Comprobante
-                      </label>
-                      <input
-                        type="file"
-                        id="receipt-upload"
-                        accept="image/*,.pdf"
-                        className="hidden"
-                        onChange={handleReceiptUpload}
-                      />
-                      <label
-                        htmlFor="receipt-upload"
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer ${paymentReceipt ? "border-green-500 bg-green-500/10" : "border-white/10 bg-black/50"}`}
-                      >
-                        <span className="flex items-center gap-3 text-sm text-white/70">
-                          <Receipt
-                            size={18}
-                            className={
-                              paymentReceipt
-                                ? "text-green-500"
-                                : "text-white/30"
                             }
-                          />{" "}
-                          {paymentReceipt
-                            ? "Comprobante Adjuntado"
-                            : "Seleccionar Archivo..."}
+                          })()}
+                        </div>
+                      )}
+                      <div className="mt-6 border-t border-white/5 pt-6 mb-6">
+                        <label className="block text-xs font-bold uppercase tracking-widest text-white mb-3">
+                          Adjuntar Comprobante
+                        </label>
+                        <input
+                          type="file"
+                          id="receipt-upload"
+                          accept="image/*,.pdf"
+                          className="hidden"
+                          onChange={handleReceiptUpload}
+                        />
+                        <label
+                          htmlFor="receipt-upload"
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer ${paymentReceipt ? "border-green-500 bg-green-500/10" : "border-white/10 bg-black/50"}`}
+                        >
+                          <span className="flex items-center gap-3 text-sm text-white/70">
+                            <Receipt
+                              size={18}
+                              className={
+                                paymentReceipt
+                                  ? "text-green-500"
+                                  : "text-white/30"
+                              }
+                            />{" "}
+                            {paymentReceipt
+                              ? "Comprobante Adjuntado"
+                              : "Seleccionar Archivo..."}
+                          </span>
+                        </label>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full rounded-xl bg-elite-gold border border-white/10 px-8 py-5 text-center shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:scale-[1.01] transition-all"
+                      >
+                        <span className="text-sm font-black uppercase tracking-widest text-elite-black flex items-center justify-center gap-2">
+                          {isLoading ? (
+                            "Procesando..."
+                          ) : (
+                            <>
+                              <Sparkles size={20} /> Enviar Perfil VIP a
+                              Revisión
+                            </>
+                          )}
                         </span>
-                      </label>
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full rounded-xl bg-elite-gold border border-white/10 px-8 py-5 text-center shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:scale-[1.01] transition-all"
-                    >
-                      <span className="text-sm font-black uppercase tracking-widest text-elite-black flex items-center justify-center gap-2">
-                        {isLoading ? (
-                          "Procesando..."
-                        ) : (
-                          <>
-                            <Sparkles size={20} /> Enviar Perfil VIP a Revisión
-                          </>
-                        )}
-                      </span>
-                    </button>
-                  </>
-                )}
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-white/40 mt-8 justify-center">
-                  <ShieldCheck size={14} className="text-green-500" />{" "}
-                  Encriptación de Grado Militar
+                      </button>
+                    </>
+                  )}
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-white/40 mt-8 justify-center">
+                    <ShieldCheck size={14} className="text-green-500" />{" "}
+                    Encriptación de Grado Militar
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-8 p-10 border border-white/5 rounded-3xl bg-black/40 text-center flex flex-col items-center justify-center shadow-inner">
+                  <Lock size={36} className="text-white/20 mb-4" />
+                  <p className="text-xs text-white/50 font-bold uppercase tracking-widest max-w-sm leading-relaxed">
+                    Por favor, confirma que has leído los términos y políticas
+                    en la casilla superior para desbloquear la pasarela de pago
+                    seguro.
+                  </p>
+                </div>
+              )}
             </div>
+
             <div
               className={`w-full backface-hidden rotate-y-180 ${isExclusive ? "absolute top-0 left-0 pointer-events-none opacity-0" : "relative opacity-100"}`}
             >
@@ -1025,11 +1091,12 @@ export default function CreateService() {
                 </h1>
               </div>
               {renderFormFields("silver")}
+              {renderTermsCheckbox()}
               <div className="mt-8">
                 <button
                   type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-white text-black px-8 py-5 rounded-xl text-center font-black uppercase tracking-widest hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                  disabled={isLoading || !acceptedTerms}
+                  className={`w-full px-8 py-5 rounded-xl text-center font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${acceptedTerms ? "bg-white text-black hover:scale-[1.01]" : "bg-white/10 text-white/30 cursor-not-allowed"}`}
                 >
                   {isLoading ? "Publicando..." : "Publicar de Forma Gratuita"}
                 </button>

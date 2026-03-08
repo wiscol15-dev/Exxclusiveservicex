@@ -24,13 +24,12 @@ interface FooterProps {
 
 export default function Footer({ settings }: FooterProps) {
   const [liveSettings, setLiveSettings] = useState<PlatformSettings>({
-    logo_text: settings?.logo_text || "EliteServices",
+    logo_text: settings?.logo_text || "exxclusiveservicex",
     primary_color: settings?.primary_color || "#f59e0b",
     secondary_color: settings?.secondary_color || "#7f1d1d",
   });
 
   useEffect(() => {
-    // Si la página principal no le pasa los datos, los busca automáticamente por seguridad
     const fetchSettings = async () => {
       if (!settings) {
         const { data } = await supabase
@@ -43,7 +42,6 @@ export default function Footer({ settings }: FooterProps) {
     };
     fetchSettings();
 
-    // Escucha en tiempo real cualquier cambio hecho desde el SuperAdmin
     const channel = supabase
       .channel("public-footer-changes")
       .on(
@@ -60,7 +58,6 @@ export default function Footer({ settings }: FooterProps) {
     };
   }, [settings]);
 
-  // Lógica para dividir el texto a la mitad y mantener el diseño bicolor de lujo
   const text = liveSettings.logo_text;
   const splitIndex = Math.ceil(text.length / 2);
   const firstHalf = text.slice(0, splitIndex);
@@ -98,37 +95,37 @@ export default function Footer({ settings }: FooterProps) {
             <ul className="space-y-3 text-sm text-white/50">
               <li>
                 <Link
-                  href="#"
+                  href="/terminos"
                   className="hover:text-white transition-colors flex items-center gap-2"
                 >
                   <ChevronRight
                     size={14}
                     style={{ color: liveSettings.primary_color }}
-                  />{" "}
+                  />
                   Términos de Servicio
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/privacidad"
                   className="hover:text-white transition-colors flex items-center gap-2"
                 >
                   <ChevronRight
                     size={14}
                     style={{ color: liveSettings.primary_color }}
-                  />{" "}
+                  />
                   Políticas de Privacidad
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/discrecion"
                   className="hover:text-white transition-colors flex items-center gap-2"
                 >
                   <ChevronRight
                     size={14}
                     style={{ color: liveSettings.primary_color }}
-                  />{" "}
+                  />
                   Discreción de Datos
                 </Link>
               </li>
@@ -170,13 +167,17 @@ export default function Footer({ settings }: FooterProps) {
 
           <div className="flex gap-6">
             <a
-              href="#"
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-white/40 hover:text-white transition-colors"
             >
               <Instagram size={18} />
             </a>
             <a
-              href="#"
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-white/40 hover:text-white transition-colors"
             >
               <Twitter size={18} />
@@ -187,7 +188,7 @@ export default function Footer({ settings }: FooterProps) {
             href="/superadmin/login"
             className="text-[10px] text-white/10 hover:text-white/40 underline underline-offset-4 transition-colors tracking-widest uppercase"
           >
-            Management
+            EXXSEX
           </Link>
         </div>
       </div>
