@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: "/superadmin/",
+      disallow: ["/superadmin/", "/api/"],
     },
-    sitemap: "https://tudominio.com/sitemap.xml",
+    sitemap: "https://exxclusiveservicex.vercel.app/sitemap.xml",
   };
 }
