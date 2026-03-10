@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 export const revalidate = 0;
 
 export const metadata = {
-  title: "exxclusiveservicex | Catálogo Global VIP",
+  title: "exxelite | Catálogo Global VIP",
   description:
     "High-end luxury marketplace for exclusive services. Absolute discretion, security, and premium experiences worldwide.",
   robots: "index, follow",

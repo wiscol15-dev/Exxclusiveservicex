@@ -188,7 +188,7 @@ export default function Footer({ settings }: FooterProps) {
             href="/superadmin/login"
             className="text-[10px] text-white/10 hover:text-white/40 underline underline-offset-4 transition-colors tracking-widest uppercase"
           >
-            EXXSEX
+            exxelite
           </Link>
         </div>
       </div>

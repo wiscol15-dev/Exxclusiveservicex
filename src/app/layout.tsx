@@ -15,8 +15,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "exxclusiveservicex | El Directorio VIP Más Exclusivo",
-    template: "%s | exxclusiveservicex",
+    default: "exxelite | El Directorio VIP Más Exclusivo",
+    template: "%s | exxelite",
   },
   description:
     "Descubre los perfiles VIP más exclusivos. Conexiones reales, discreción absoluta y experiencias de alto nivel. El marketplace líder de compañía premium.",
@@ -26,16 +26,16 @@ export const metadata: Metadata = {
     "directorio premium",
     "encuentros discretos",
     "acompañantes de lujo",
-    "exxclusiveservicex",
+    "exxelite",
   ],
   authors: [
     {
-      name: "exxclusiveservicex",
+      name: "exxelite",
       url: "https://exxclusiveservicex.vercel.app",
     },
   ],
-  creator: "exxclusiveservicex",
-  publisher: "exxclusiveservicex",
+  creator: "exxelite",
+  publisher: "exxelite",
   metadataBase: new URL("https://exxclusiveservicex.vercel.app"),
   alternates: {
     canonical: "/",
@@ -53,30 +53,30 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_ES",
     url: "https://exxclusiveservicex.vercel.app",
-    title: "exxclusiveservicex | Experiencias y Perfiles VIP",
+    title: "exxelite | Experiencias y Perfiles VIP",
     description:
       "El marketplace de lujo para servicios exclusivos. Seguridad, discreción y perfiles 100% verificados.",
-    siteName: "exxclusiveservicex",
+    siteName: "exxelite",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "exxclusiveservicex - Lujo y Discreción",
+        alt: "exxelite - Lujo y Discreción",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "exxclusiveservicex | Experiencias VIP",
+    title: "exxelite | Experiencias VIP",
     description:
       "El marketplace de lujo para servicios exclusivos y discretos.",
-    creator: "@exxclusiveservicex",
+    creator: "@exxelite",
     images: ["/og-image.jpg"],
   },
   appleWebApp: {
     capable: true,
-    title: "exxclusiveservicex",
+    title: "exxelite",
     statusBarStyle: "black-translucent",
   },
   robots: {
